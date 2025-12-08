@@ -1,6 +1,6 @@
 json
 {
-  "name": "trade#-frontend",
+  "name": "tradehashtag-frontend",
   "version": "1.0.0",
   "description": "Trade# - AI-Powered Day Trading Platform - Frontend Only",
   "type": "module",
