@@ -1,0 +1,7 @@
+html
+    <meta name="description" content="Professional AI-powered day trading platform for Gold, S&P 500 Futures, and Bitcoin" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <style>
