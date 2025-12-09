@@ -1,8 +1,8 @@
 tsx
 import React, { useState } from 'react';
-import LandingPage from './components/LandingPage.tsx';
-import LoginPage from './components/LoginPage.tsx';
-import Dashboard from './components/Dashboard.tsx';
+import LandingPage from './components/LandingPage.tsx';  // ← COM .tsx
+import LoginPage from './components/LoginPage.tsx';      // ← COM .tsx
+import Dashboard from './components/Dashboard.tsx';      // ← COM .tsx
 import './styles/globals.css';
 
 type Page = 'landing' | 'login' | 'signup' | 'dashboard';
