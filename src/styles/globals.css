@@ -1,37 +1,14 @@
 css
-@import "tailwindcss";
-
 /* ============================================
-   DESIGN SYSTEM - TRADE# (Tailwind v4)
+   TRADE# - GLOBAL STYLES (Tailwind v4)
    ============================================ */
 
-/* Cores Base */
-@theme {
-  /* Backgrounds */
-  --color-bg-primary: #0a0e1a;
-  --color-bg-secondary: #131824;
-  --color-bg-tertiary: #1a2030;
-  
-  /* Text */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #8b92a8;
-  --color-text-muted: #6b7280;
-  
-  /* Borders */
-  --color-border: rgba(255, 255, 255, 0.08);
-  
-  /* Accent (Gradient Cyan/Green) */
-  --color-accent: #00c8ff;
-  --color-accent-secondary: #00ff88;
-  
-  /* Status Colors */
-  --color-success: #00ff88;
-  --color-danger: #ef4444;
-  --color-warning: #fbbf24;
-  --color-info: #00c8ff;
-}
+/* Tailwind Base Imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* CSS Variables (para compatibilidade) */
+/* CSS Variables - Design System */
 :root {
   /* Backgrounds */
   --bg-primary: #0a0e1a;
