@@ -1,90 +1,65 @@
-typescript
-   import { useState, useEffect } from 'react';
-   import Dashboard from './components/Dashboard';
-   import LandingPage from './components/LandingPage';
-   import LoginPage from './components/LoginPage';
+tsx
+import React, { useState } from 'react';
+import LandingPage from './components/LandingPage';
+import LoginPage from './components/LoginPage';
+import Dashboard from './components/Dashboard';
+import './styles/globals.css';
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'signup' | 'dashboard'>('landing');
-  const [user, setUser] = useState<{ email: string; name: string } | null>(null);
+type Page = 'landing' | 'login' | 'signup' | 'dashboard';
 
-  // Verificar se usuário está logado ao carregar
-  useEffect(() => {
-    const storedUser = localStorage.getItem('trade#_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setCurrentPage('dashboard');
-    }
-  }, []);
+function App() {
+  const [currentPage, setCurrentPage] = useState<Page>('landing');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Login
-  const handleLogin = (email: string, password: string) => {
-    // Simular login - aceita qualquer email/senha
-    const userData = { email, name: email.split('@')[0] };
-    localStorage.setItem('trade#_user', JSON.stringify(userData));
-    setUser(userData);
+  const handleLogin = (email: string, password: string, name?: string) => {
+    console.log('Login attempt:', { email, password, name });
+    // Mock authentication - always succeeds
+    setIsAuthenticated(true);
     setCurrentPage('dashboard');
   };
 
-  // Signup
-  const handleSignup = (email: string, password: string, name: string) => {
-    // Simular signup
-    const userData = { email, name };
-    localStorage.setItem('trade#_user', JSON.stringify(userData));
-    setUser(userData);
+  const handleDemoLogin = () => {
+    console.log('Demo login');
+    setIsAuthenticated(true);
     setCurrentPage('dashboard');
   };
 
-  // Logout
   const handleLogout = () => {
-    localStorage.removeItem('trade#_user');
-    setUser(null);
+    setIsAuthenticated(false);
     setCurrentPage('landing');
   };
 
-  // Demo login
-  const handleDemoLogin = () => {
-    const demoUser = { email: 'demo@trade#.com', name: 'Demo User' };
-    localStorage.setItem('trade#_user', JSON.stringify(demoUser));
-    setUser(demoUser);
-    setCurrentPage('dashboard');
-  };
+  // Render current page
+  if (currentPage === 'landing') {
+    return (
+      <LandingPage
+        onGetStarted={() => setCurrentPage('signup')}
+        onLogin={() => setCurrentPage('login')}
+      />
+    );
+  }
 
+  if (currentPage === 'login' || currentPage === 'signup') {
+    return (
+      <LoginPage
+        mode={currentPage}
+        onSubmit={handleLogin}
+        onSwitchMode={() => setCurrentPage(currentPage === 'login' ? 'signup' : 'login')}
+        onBack={() => setCurrentPage('landing')}
+        onDemoLogin={handleDemoLogin}
+      />
+    );
+  }
+
+  if (currentPage === 'dashboard' && isAuthenticated) {
+    return <Dashboard />;
+  }
+
+  // Fallback
   return (
-    <>
-      {currentPage === 'landing' && (
-        <LandingPage 
-          onGetStarted={() => setCurrentPage('signup')}
-          onLogin={() => setCurrentPage('login')}
-        />
-      )}
-
-      {currentPage === 'login' && (
-        <LoginPage
-          mode="login"
-          onSubmit={handleLogin}
-          onSwitchMode={() => setCurrentPage('signup')}
-          onBack={() => setCurrentPage('landing')}
-          onDemoLogin={handleDemoLogin}
-        />
-      )}
-
-      {currentPage === 'signup' && (
-        <LoginPage
-          mode="signup"
-          onSubmit={handleSignup}
-          onSwitchMode={() => setCurrentPage('login')}
-          onBack={() => setCurrentPage('landing')}
-          onDemoLogin={handleDemoLogin}
-        />
-      )}
-
-      {currentPage === 'dashboard' && user && (
-        <Dashboard 
-          user={user}
-          onLogout={handleLogout}
-        />
-      )}
-    </>
+    <LandingPage
+      onGetStarted={() => setCurrentPage('signup')}
+      onLogin={() => setCurrentPage('login')}
+    />
   );
 }
