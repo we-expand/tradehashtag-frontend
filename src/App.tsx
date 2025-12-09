@@ -1,8 +1,8 @@
 tsx
 import React, { useState } from 'react';
-import LandingPage from './components/LandingPage';
-import LoginPage from './components/LoginPage';
-import Dashboard from './components/Dashboard';
+import LandingPage from './components/LandingPage.tsx';
+import LoginPage from './components/LoginPage.tsx';
+import Dashboard from './components/Dashboard.tsx';
 import './styles/globals.css';
 
 type Page = 'landing' | 'login' | 'signup' | 'dashboard';
@@ -13,7 +13,6 @@ function App() {
 
   const handleLogin = (email: string, password: string, name?: string) => {
     console.log('Login attempt:', { email, password, name });
-    // Mock authentication - always succeeds
     setIsAuthenticated(true);
     setCurrentPage('dashboard');
   };
@@ -29,7 +28,6 @@ function App() {
     setCurrentPage('landing');
   };
 
-  // Render current page
   if (currentPage === 'landing') {
     return (
       <LandingPage
@@ -55,7 +53,6 @@ function App() {
     return <Dashboard />;
   }
 
-  // Fallback
   return (
     <LandingPage
       onGetStarted={() => setCurrentPage('signup')}
@@ -63,3 +60,5 @@ function App() {
     />
   );
 }
+
+export default App;
