@@ -1,8 +1,7 @@
 tsx
-import { useState, useEffect } from 'react';
-import { LandingPage } from './components/LandingPage';
-import { LoginPage } from './components/LoginPage';
-import { Dashboard } from './components/Dashboard';
+import Dashboard from './components/Dashboard';
+import LandingPage from './components/LandingPage';
+import LoginPage from './components/LoginPage';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<'landing' | 'login' | 'signup' | 'dashboard'>('landing');
