@@ -1,6 +1,63 @@
 css
-@import 'tailwindcss';
+@import "tailwindcss";
 
+/* ============================================
+   DESIGN SYSTEM - TRADE# (Tailwind v4)
+   ============================================ */
+
+/* Cores Base */
+@theme {
+  /* Backgrounds */
+  --color-bg-primary: #0a0e1a;
+  --color-bg-secondary: #131824;
+  --color-bg-tertiary: #1a2030;
+  
+  /* Text */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #8b92a8;
+  --color-text-muted: #6b7280;
+  
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.08);
+  
+  /* Accent (Gradient Cyan/Green) */
+  --color-accent: #00c8ff;
+  --color-accent-secondary: #00ff88;
+  
+  /* Status Colors */
+  --color-success: #00ff88;
+  --color-danger: #ef4444;
+  --color-warning: #fbbf24;
+  --color-info: #00c8ff;
+}
+
+/* CSS Variables (para compatibilidade) */
+:root {
+  /* Backgrounds */
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #131824;
+  --bg-tertiary: #1a2030;
+  
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #8b92a8;
+  --text-muted: #6b7280;
+  
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  
+  /* Accent */
+  --accent: #00c8ff;
+  --accent-secondary: #00ff88;
+  
+  /* Status */
+  --success: #00ff88;
+  --danger: #ef4444;
+  --warning: #fbbf24;
+  --info: #00c8ff;
+}
+
+/* Reset & Base Styles */
 {
   margin: 0;
   padding: 0;
@@ -13,11 +70,120 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #0a0a0a;
-  color: #ffffff;
-  overflow-x: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-#root {
-  min-height: 100vh;
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Typography */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.5s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Utilities */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
