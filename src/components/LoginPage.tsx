@@ -15,7 +15,7 @@ interface LoginPageProps {
   onDemoLogin: () => void;
 }
 
-export function LoginPage({ mode, onSubmit, onSwitchMode, onBack, onDemoLogin }: LoginPageProps) {
+export default function LoginPage({ mode, onSubmit, onSwitchMode, onBack, onDemoLogin }: LoginPageProps) {
   const isLogin = mode === 'login';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -435,6 +435,158 @@ export function LoginPage({ mode, onSubmit, onSwitchMode, onBack, onDemoLogin }:
           animation: slideDown 0.4s ease-out;
         }
       `}</style>
+    </div>
+  );
+}
+```
+
+---
+
+📄 3. Dashboard.tsx (CÓDIGO COMPLETO CORRIGIDO)
+
+Copie todo este código e substitua COMPLETAMENTE o arquivo `src/components/Dashboard.tsx` no GitHub:
+
+```tsx
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AIScorePanel } from './AIScorePanel';
+import { AssetCard } from './AssetCard';
+import { PerformanceCard } from './PerformanceCard';
+import { 
+  MarketData, 
+  AIScore, 
+  fetchGoldData, 
+  fetchSP500Data, 
+  fetchBitcoinData,
+  calculateAIScore,
+  subscribeToMarketData
+} from '../services/marketData';
+
+export default function Dashboard() {
+  const { t } = useTranslation();
+  const [goldData, setGoldData] = useState<MarketData | null>(null);
+  const [sp500Data, setSp500Data] = useState<MarketData | null>(null);
+  const [btcData, setBtcData] = useState<MarketData | null>(null);
+  const [aiScore, setAiScore] = useState<AIScore | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Mock performance data
+  const performanceData = {
+    todayProfit: 1250.00,
+    winRate: 73,
+    totalTrades: 11
+  };
+
+  // Initial data load
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const [gold, sp500, btc, score] = await Promise.all([
+          fetchGoldData(),
+          fetchSP500Data(),
+          fetchBitcoinData(),
+          calculateAIScore()
+        ]);
+
+        setGoldData(gold);
+        setSp500Data(sp500);
+        setBtcData(btc);
+        setAiScore(score);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  // Real-time updates
+  useEffect(() => {
+    const unsubscribe = subscribeToMarketData((data) => {
+      setGoldData(data[0]);
+      setSp500Data(data[1]);
+      setBtcData(data[2]);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Update AI score every minute
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const score = await calculateAIScore();
+        setAiScore(score);
+      } catch (error) {
+        console.error('Error updating AI score:', error);
+      }
+    }, 60000); // 1 minute
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading || !aiScore) {
+    return (
+      <div className="flex items-center justify-center h-screen" style={{ background: 'var(--bg-primary)' }}>
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 rounded-full animate-pulse mx-auto mb-4" 
+               style={{ borderColor: 'var(--accent)', borderTopColor: 'transparent' }}
+          />
+          <p style={{ color: 'var(--text-secondary)' }}>Loading market data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-8 space-y-6" style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl mb-2" style={{ color: 'var(--text-primary)' }}>
+          {t('dashboard')}
+        </h1>
+        <p style={{ color: 'var(--text-secondary)' }}>
+          Real-time market analysis powered by AI
+        </p>
+      </div>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - AI Score */}
+        <div className="lg:col-span-1">
+          <AIScorePanel aiScore={aiScore} />
+        </div>
+
+        {/* Right Column - Assets */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Performance */}
+          <PerformanceCard data={performanceData} />
+
+          {/* Assets Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {goldData && (
+              <AssetCard data={goldData} assetName="gold" />
+            )}
+            {sp500Data && (
+              <AssetCard data={sp500Data} assetName="sp500" />
+            )}
+            {btcData && (
+              <AssetCard data={btcData} assetName="bitcoin" />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Live Updates Indicator */}
+      <div className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-2 rounded-full"
+           style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+        <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--success)' }} />
+        <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+          Live Updates Active
+        </span>
+      </div>
     </div>
   );
 }
