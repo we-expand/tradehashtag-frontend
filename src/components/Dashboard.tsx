@@ -1,142 +1,98 @@
-tsx
-/**
-📊 DASHBOARD - TRADEHASHTAG
-Dashboard placeholder para demonstração
- */
+import React, { useState, useEffect } from 'react';
+import { AIScorePanel } from './AIScorePanel';
+import { AssetCard } from './AssetCard';
+import { PerformanceCard } from './PerformanceCard';
+import { 
+  MarketData, 
+  AIScore, 
+  fetchGoldData, 
+  fetchSP500Data, 
+  fetchBitcoinData,
+  calculateAIScore
+} from '../services/marketData';
 
-import React from 'react';
-import { TrendingUp, LogOut, User, Activity, DollarSign, TrendingDown } from 'lucide-react';
+export default function Dashboard() {
+  const [goldData, setGoldData] = useState<MarketData | null>(null);
+  const [sp500Data, setSp500Data] = useState<MarketData | null>(null);
+  const [btcData, setBtcData] = useState<MarketData | null>(null);
+  const [aiScore, setAiScore] = useState<AIScore | null>(null);
+  const [loading, setLoading] = useState(true);
 
-interface DashboardProps {
-  user: {
-    email: string;
-    name: string;
+  const performanceData = {
+    todayProfit: 1250.00,
+    winRate: 73,
+    totalTrades: 11
   };
-  onLogout: () => void;
-}
 
-export function Dashboard({ user, onLogout }: DashboardProps) {
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [gold, sp500, btc, score] = await Promise.all([
+          fetchGoldData(),
+          fetchSP500Data(),
+          fetchBitcoinData(),
+          calculateAIScore()
+        ]);
+
+        setGoldData(gold);
+        setSp500Data(sp500);
+        setBtcData(btc);
+        setAiScore(score);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setLoading(false);
+      }
+    };
+
+    loadData();
+
+    const interval = setInterval(loadData, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading || !aiScore) {
+    return (
+      <div className="flex items-center justify-center h-screen" style={{ background: '#0a0e1a' }}>
+        <div className="text-center">
+          <div 
+            className="w-16 h-16 border-4 rounded-full animate-pulse mx-auto mb-4"
+            style={{ borderColor: '#00c8ff', borderTopColor: 'transparent' }}
+          />
+          <p className="text-white/70">Loading market data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen w-full" style={{ background: '#0a0e1a' }}>
-      {/* Header */}
-      <header 
-        className="border-b px-6 py-4"
-        style={{
-          background: 'rgba(255, 255, 255, 0.02)',
-          borderColor: 'rgba(255, 255, 255, 0.05)'
-        }}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div 
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ 
-                background: 'linear-gradient(135deg, #00ff88, #00c8ff)',
-                boxShadow: '0 0 20px rgba(0, 255, 136, 0.3)'
-              }}
-            >
-              <TrendingUp size={20} color="white" />
-            </div>
-            <span className="text-xl font-bold text-white">
-              Trade<span style={{ color: '#00ff88' }}>#</span>
-            </span>
-          </div>
+    <div className="p-8 space-y-6" style={{ background: '#0a0e1a', minHeight: '100vh' }}>
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-white mb-2">Dashboard</h1>
+        <p className="text-white/60">Real-time market analysis powered by AI</p>
+      </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 px-4 py-2 rounded-xl" style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
-              <User size={18} style={{ color: '#00ff88' }} />
-              <div>
-                <div className="text-white text-sm font-semibold">{user.name}</div>
-                <div className="text-white/50 text-xs">{user.email}</div>
-              </div>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <AIScorePanel aiScore={aiScore} />
+        </div>
 
-            <button
-              onClick={onLogout}
-              className="px-4 py-2 rounded-xl transition-all hover:scale-105 flex items-center gap-2"
-              style={{ 
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#ef4444'
-              }}
-            >
-              <LogOut size={18} />
-              <span>Logout</span>
-            </button>
+        <div className="lg:col-span-2 space-y-6">
+          <PerformanceCard data={performanceData} />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {goldData && <AssetCard data={goldData} assetName="gold" />}
+            {sp500Data && <AssetCard data={sp500Data} assetName="sp500" />}
+            {btcData && <AssetCard data={btcData} assetName="bitcoin" />}
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto p-6">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Welcome back, <span style={{ color: '#00ff88' }}>{user.name.split(' ')[0]}</span>!
-          </h1>
-          <p className="text-white/60">
-            Your AI-powered trading dashboard
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {[
-            {
-              icon: Activity,
-              label: 'Market Status',
-              value: 'Online',
-              change: '+0.0%',
-              positive: true,
-              color: '#00ff88'
-            },
-            {
-              icon: DollarSign,
-              label: 'Portfolio Value',
-              value: '$0.00',
-              change: '+0.00%',
-              positive: true,
-              color: '#00c8ff'
-            },
-            {
-              icon: TrendingUp,
-              label: 'Today P&L',
-              value: '$0.00',
-              change: '0.00%',
-              positive: true,
-              color: '#a855f7'
-            }
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className="p-6 rounded-2xl"
-              style={{
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.05)'
-              }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ 
-                    background: `${stat.color}20`,
-                    boxShadow: `0 0 20px ${stat.color}40`
-                  }}
-                >
-                  <stat.icon size={24} style={{ color: stat.color }} />
-                </div>
-                <span 
-                  className="text-sm font-semibold px-2 py-1 rounded"
-                  style={{
-                    background: stat.positive ? 'rgba(0, 255, 136, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                    color: stat.positive ? '#00ff88' : '#ef4444'
-                  }}
-                >
-                  {stat.change}
-                </span>
-              </div>
-              <div className="text-white/50 text-sm mb-1">{stat.label}</div>
-              <div className="text-white text-2xl font-bold">{stat.value}</div>
-            </div>
-          ))}
-        </div>
+      <div className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-2 rounded-full"
+           style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#00ff88' }} />
+        <span className="text-xs text-white/60">Live Updates Active</span>
+      </div>
+    </div>
+  );
+}

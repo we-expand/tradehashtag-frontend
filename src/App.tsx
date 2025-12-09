@@ -1,9 +1,7 @@
-tsx
 import React, { useState } from 'react';
-import LandingPage from '@/components/LandingPage';
-import LoginPage from '@/components/LoginPage';
-import Dashboard from '@/components/Dashboard';
-import '@/styles/globals.css';
+import LandingPage from './components/LandingPage';
+import LoginPage from './components/LoginPage';
+import Dashboard from './components/Dashboard';
 
 type Page = 'landing' | 'login' | 'signup' | 'dashboard';
 
@@ -57,35 +55,3 @@ function App() {
 }
 
 export default App;
-```
-
-3. ATUALIZE o `tsconfig.json`:
-
-Adicione o `paths` para reconhecer o alias `@`:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/": ["./src/"]
-    }
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}

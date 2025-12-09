@@ -1,17 +1,6 @@
-tsx
 import React from 'react';
-import { TrendingUp, Brain, Zap } from 'lucide-react';
-
-interface AIScore {
-  score: number;
-  sentiment: 'bullish' | 'bearish' | 'neutral';
-  confidence: number;
-  signals: {
-    technical: number;
-    fundamental: number;
-    sentiment: number;
-  };
-}
+import { Brain, TrendingUp, Zap } from 'lucide-react';
+import { AIScore } from '../services/marketData';
 
 interface AIScorePanelProps {
   aiScore: AIScore;
@@ -19,35 +8,33 @@ interface AIScorePanelProps {
 
 export function AIScorePanel({ aiScore }: AIScorePanelProps) {
   const getScoreColor = (score: number) => {
-    if (score >= 75) return 'var(--success)';
-    if (score >= 50) return 'var(--warning)';
-    return 'var(--danger)';
+    if (score >= 75) return '#00ff88';
+    if (score >= 50) return '#fbbf24';
+    return '#ef4444';
   };
 
   const getSentimentColor = (sentiment: string) => {
-    if (sentiment === 'bullish') return 'var(--success)';
-    if (sentiment === 'bearish') return 'var(--danger)';
-    return 'var(--warning)';
+    if (sentiment === 'bullish') return '#00ff88';
+    if (sentiment === 'bearish') return '#ef4444';
+    return '#fbbf24';
   };
 
   return (
-    <div className="p-6 rounded-2xl" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-      {/* Header */}
+    <div className="p-6 rounded-2xl" style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center" 
-               style={{ background: 'var(--accent)', opacity: 0.1 }}>
-            <Brain size={20} style={{ color: 'var(--accent)' }} />
+               style={{ background: 'rgba(0, 200, 255, 0.1)' }}>
+            <Brain size={20} style={{ color: '#00c8ff' }} />
           </div>
           <div>
-            <h3 className="text-lg" style={{ color: 'var(--text-primary)' }}>AI Score</h3>
-            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Real-time analysis</p>
+            <h3 className="text-lg text-white font-bold">AI Score</h3>
+            <p className="text-xs text-white/50">Real-time analysis</p>
           </div>
         </div>
-        <Zap size={16} style={{ color: 'var(--accent)' }} className="animate-pulse" />
+        <Zap size={16} style={{ color: '#00c8ff' }} className="animate-pulse" />
       </div>
 
-      {/* Score Circle */}
       <div className="flex items-center justify-center mb-6">
         <div className="relative w-40 h-40">
           <svg className="transform -rotate-90 w-40 h-40">
@@ -55,7 +42,7 @@ export function AIScorePanel({ aiScore }: AIScorePanelProps) {
               cx="80"
               cy="80"
               r="70"
-              stroke="var(--border)"
+              stroke="rgba(255, 255, 255, 0.1)"
               strokeWidth="12"
               fill="none"
             />
@@ -72,77 +59,45 @@ export function AIScorePanel({ aiScore }: AIScorePanelProps) {
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center flex-col">
-            <span className="text-4xl" style={{ color: getScoreColor(aiScore.score) }}>
+            <span className="text-4xl font-bold" style={{ color: getScoreColor(aiScore.score) }}>
               {aiScore.score}
             </span>
-            <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>/ 100</span>
+            <span className="text-xs text-white/50">/ 100</span>
           </div>
         </div>
       </div>
 
-      {/* Sentiment */}
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
-             style={{ background: getSentimentColor(aiScore.sentiment), opacity: 0.1 }}>
+             style={{ background: getSentimentColor(aiScore.sentiment) + '20' }}>
           <TrendingUp size={16} style={{ color: getSentimentColor(aiScore.sentiment) }} />
-          <span className="text-sm capitalize" style={{ color: getSentimentColor(aiScore.sentiment) }}>
+          <span className="text-sm capitalize font-semibold" style={{ color: getSentimentColor(aiScore.sentiment) }}>
             {aiScore.sentiment}
           </span>
         </div>
-        <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
+        <p className="text-xs mt-2 text-white/50">
           Confidence: {aiScore.confidence}%
         </p>
       </div>
 
-      {/* Signals Breakdown */}
       <div className="space-y-3">
-        <div>
-          <div className="flex items-center justify-between text-sm mb-1">
-            <span style={{ color: 'var(--text-secondary)' }}>Technical</span>
-            <span style={{ color: 'var(--text-primary)' }}>{aiScore.signals.technical}%</span>
+        {Object.entries(aiScore.signals).map(([key, value]) => (
+          <div key={key}>
+            <div className="flex items-center justify-between text-sm mb-1">
+              <span className="text-white/60 capitalize">{key}</span>
+              <span className="text-white font-semibold">{value}%</span>
+            </div>
+            <div className="h-2 rounded-full" style={{ background: 'rgba(255, 255, 255, 0.1)' }}>
+              <div 
+                className="h-full rounded-full transition-all duration-500"
+                style={{ 
+                  width: `${value}%`,
+                  background: getScoreColor(value)
+                }}
+              />
+            </div>
           </div>
-          <div className="h-2 rounded-full" style={{ background: 'var(--border)' }}>
-            <div 
-              className="h-full rounded-full transition-all duration-500"
-              style={{ 
-                width: `${aiScore.signals.technical}%`,
-                background: getScoreColor(aiScore.signals.technical)
-              }}
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between text-sm mb-1">
-            <span style={{ color: 'var(--text-secondary)' }}>Fundamental</span>
-            <span style={{ color: 'var(--text-primary)' }}>{aiScore.signals.fundamental}%</span>
-          </div>
-          <div className="h-2 rounded-full" style={{ background: 'var(--border)' }}>
-            <div 
-              className="h-full rounded-full transition-all duration-500"
-              style={{ 
-                width: `${aiScore.signals.fundamental}%`,
-                background: getScoreColor(aiScore.signals.fundamental)
-              }}
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between text-sm mb-1">
-            <span style={{ color: 'var(--text-secondary)' }}>Sentiment</span>
-            <span style={{ color: 'var(--text-primary)' }}>{aiScore.signals.sentiment}%</span>
-          </div>
-          <div className="h-2 rounded-full" style={{ background: 'var(--border)' }}>
-            <div 
-              className="h-full rounded-full transition-all duration-500"
-              style={{ 
-                width: `${aiScore.signals.sentiment}%`,
-                background: getScoreColor(aiScore.signals.sentiment)
-              }}
-            />
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
